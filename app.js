@@ -140,7 +140,9 @@ app.post("/get-image-data", async (req, res) => {
   res.send([]);
 });
 
+
+
 app.listen("3000", () => {
   console.log(`Example app listening \n`);
-  console.log("http:/192.168.1.108:3000");
+  // console.log("http:/192.168.1.108:3000");
 });
