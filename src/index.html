@@ -9,15 +9,16 @@
 </head>
 <body>
     <div class="header">
-        <ul>
-            <li><button id="download_Db">Download DB</button></li>
-            <li><button id="sort_by_card_number">sort cardNumber</button></li>
+        <ul class="header_menu">
+            <li><a id="download_Db" href="/src/db/Cards.realm">Download</a></li>
+            <li><button id="sort_by_card_number">SORT</button></li>
         </ul>
     </div>
     <div id="load_section" class="load_wrapper">
         <input type="file" id="file_input" multiple="multiple">
         <span >Click to load image</span>
     </div>
+    <div class="table_wrapper">
     <table >
         <thead>
             <tr>
@@ -35,6 +36,7 @@
 
         </tbody>
     </table>
+</div>
     <!-- <div id="text_data_list" class="text_data_list_wrapper"></div> -->
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>

@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const uuid = require('uuid');
+const url = require("url");
 
 
 const vision = require("@google-cloud/vision");
@@ -68,11 +69,18 @@ app.use(
 );
 
 app.use("/src", express.static(__dirname + "/src/"));
-// app.use("/css", express.static(__dirname + "/public/css"));
+app.use("/src", express.static(__dirname + "/src/db/Cards.realm"));
+
 app.use("/", router);
 
 app.get("/all-in-db", async (req, res) => {
-  const allDB = await db.objects("Card").sorted("id");
+  const queryObject = url.parse(req.url, true).query || {};
+  let allDB;
+  if(queryObject && queryObject.sort === "cardNumber" ){
+   allDB = await db.objects("Card").sorted("cardNumber");
+  }else{
+   allDB = await db.objects("Card").sorted("id");
+  }
   const cards = JSON.parse(JSON.stringify(allDB));
   res.send(JSON.stringify(cards));
 });
@@ -96,6 +104,36 @@ app.post("/delete-row", async (req, res) => {
   }
 });
 
+// app.get("/all-in-db-sorted", async (req, res) => {
+//   const allDB = await db.objects("Card").sorted("id");
+//   const cards = JSON.parse(JSON.stringify(allDB));
+//   res.send(JSON.stringify(cards));
+// });
+
+// app.post("/delete-row", async (req, res) => {
+//   const item =JSON.parse(req.body.body) ;
+
+//   try {
+//     let resalt;
+//     const currenItem = await db
+//       .objects("Card")
+//       .filter((userObj) => userObj.id == item.id);
+//     resalt = db.write(async () => {
+//       return await db.delete(currenItem);
+//     });
+
+//     return res.send(resalt);
+//   } catch (error) {
+//     console.log(error);
+//     return res.send(JSON.stringify(error));
+//   }
+// });
+
+
+
+
+
+
 //  ---------- GOOGLE API ----------
 app.post("/get-image-data", async (req, res) => {
   // const imageBase64 = req.body.text;
@@ -107,7 +145,7 @@ app.post("/get-image-data", async (req, res) => {
     const foolText = all[0].fullTextAnnotation.text.split("\n");
     const leng = all[0].fullTextAnnotation.pages[0].property.detectedLanguages[0]
       .languageCode;
-    console.log("AAAAAAAAAA",foolText,foolText[foolText.length-1]);
+    // console.log("AAAAAAAAAA",foolText,foolText[foolText.length-1]);
     try {
       const test = await db.write(async () => {
         db.create("Card", {

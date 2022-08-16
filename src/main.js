@@ -12,6 +12,16 @@ window.addEventListener("load", () => {
   handelUpdateTable();
 });
 
+sortButton.addEventListener("click", ()=>{
+  axios
+    .get("/all-in-db?sort=cardNumber")
+    .then((res) => res.data)
+    .then((res) => {
+      // data = res;
+      updateTextDataListUi(res);
+    });
+})
+
 const handelUpdateTable = () => {
   axios
     .get("/all-in-db")
