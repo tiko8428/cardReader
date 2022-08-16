@@ -2,7 +2,9 @@ const LoadWrapper = document.getElementById("load_section");
 const fileInput = document.getElementById("file_input");
 const textDataListElem = document.getElementById("text_data_list");
 const table = document.getElementById("table");
-// let data = [];
+const sortButton = document.getElementById("sort_by_card_number")
+const downloadDB = document.getElementById("download_Db")
+
 LoadWrapper.addEventListener("mousedown", handelLoad);
 fileInput.addEventListener("change", handelImage);
 
