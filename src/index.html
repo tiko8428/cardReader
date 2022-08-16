@@ -8,7 +8,12 @@
     <link rel="stylesheet" href="src/style.css">
 </head>
 <body>
-    <div class="header">HEADER</div>
+    <div class="header">
+        <ul>
+            <li><button id="download_Db">Download DB</button></li>
+            <li><button id="sort_by_cardnumber">sort cardNumber</button></li>
+        </ul>
+    </div>
     <div id="load_section" class="load_wrapper">
         <input type="file" id="file_input" multiple="multiple">
         <span >Click to load image</span>
@@ -24,15 +29,6 @@
                 <td>example</td>
                 <td>category</td>
                 <td>Actions</td>
-                <!-- id: uuid.v4(),
-                // id: Math.random(),
-                cardNumber: parseInt(data.textLiens[0], 10) || NaN,
-                language: data.textLeng,
-                name: data.textLiens[1],
-                plural: data.textLiens[2],
-                secondary: data.textLiens[data.textLiens.lenght - 3] || "secondary",
-                example: data.textLiens[data.textLiens.lenght - 2] || "example",
-                systemImageName: "string", -->
             </tr>
         </thead>
         <tbody id="table">
