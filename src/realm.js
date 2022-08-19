@@ -15,10 +15,10 @@ const CardSchema = {
     language: 'string',
     name: 'string',
     plural: 'string',
-    secondary: 'string',
+    secondary: 'string?',
     example: "string",
     category: "string",
-    systemImageName: "string",
+    systemImageName: "string?",
   }
 };
 

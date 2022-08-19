@@ -12,9 +12,6 @@ const fileUpload = require("express-fileupload");
 
 const db = require("./src/realm");
 
-// const t = db.objects("Card");
-// const users = JSON.parse(JSON.stringify(t));
-
 const CREDANTIOLS = JSON.parse(
   JSON.stringify({
     type: "service_account",
@@ -43,12 +40,12 @@ const client = new vision.ImageAnnotatorClient(CONFIG);
 
 const app = express();
 app.use(cors());
-app.use(express.json());
 
 app.use(
   fileUpload({
     useTempFiles: true,
     tempFileDir: "/tmp/",
+    limits: { fileSize: 50 * 1024 * 1024 },
   })
 );
 // app.use(upload.array());
@@ -56,13 +53,14 @@ app.use(
 app.use(
   bodyParser.json({ limit: "50mb", type: "application/json", extended: true })
 );
+
 app.use(
   bodyParser.text({ limit: "50mb", type: "application/json", extended: true })
 );
 
 app.use(
   bodyParser.urlencoded({
-    parameterLimit: 100000,
+    // parameterLimit: 100000,
     limit: "50mb",
     extended: true,
   })
@@ -104,40 +102,11 @@ app.post("/delete-row", async (req, res) => {
   }
 });
 
-// app.get("/all-in-db-sorted", async (req, res) => {
-//   const allDB = await db.objects("Card").sorted("id");
-//   const cards = JSON.parse(JSON.stringify(allDB));
-//   res.send(JSON.stringify(cards));
-// });
-
-// app.post("/delete-row", async (req, res) => {
-//   const item =JSON.parse(req.body.body) ;
-
-//   try {
-//     let resalt;
-//     const currenItem = await db
-//       .objects("Card")
-//       .filter((userObj) => userObj.id == item.id);
-//     resalt = db.write(async () => {
-//       return await db.delete(currenItem);
-//     });
-
-//     return res.send(resalt);
-//   } catch (error) {
-//     console.log(error);
-//     return res.send(JSON.stringify(error));
-//   }
-// });
-
-
-
-
 
 
 //  ---------- GOOGLE API ----------
 app.post("/get-image-data", async (req, res) => {
-  // const imageBase64 = req.body.text;
-  // const t = await newTextDetection(req.files.file);
+
   const filePath = req.files.file.tempFilePath;
   try {
     const all = await client.textDetection(filePath);
@@ -150,13 +119,12 @@ app.post("/get-image-data", async (req, res) => {
       const test = await db.write(async () => {
         db.create("Card", {
           id: uuid.v4(),
-          // id: Math.random(),
           cardNumber:foolText[0] || 0,
           language: leng,
           name: foolText[1],
           plural: foolText[2],
-          secondary: foolText[foolText.length-3] || "secondary",
-          example: foolText[foolText.length-2] || "example",
+          secondary: foolText[foolText.length-3] || null,
+          example: foolText[foolText.length-2] || null,
           category: foolText[foolText.length-1],
           systemImageName: "",
         });
@@ -181,6 +149,7 @@ app.post("/get-image-data", async (req, res) => {
 
 
 app.listen("3000", () => {
+  // "192.168.1.108",
   console.log(`Example app listening \n`);
   // console.log("http:/192.168.1.108:3000");
 });

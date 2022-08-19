@@ -4,6 +4,7 @@ const textDataListElem = document.getElementById("text_data_list");
 const table = document.getElementById("table");
 const sortButton = document.getElementById("sort_by_card_number")
 const downloadDB = document.getElementById("download_Db")
+const sortBy = "";
 
 LoadWrapper.addEventListener("mousedown", handelLoad);
 fileInput.addEventListener("change", handelImage);
@@ -24,7 +25,7 @@ sortButton.addEventListener("click", ()=>{
 
 const handelUpdateTable = () => {
   axios
-    .get("/all-in-db")
+    .get("/all-in-db?sort=cardNumber")
     .then((res) => res.data)
     .then((res) => {
       // data = res;
