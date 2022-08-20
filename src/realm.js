@@ -5,14 +5,13 @@ const path = require("path");
 // const preDb = require("./German-Cards.realm");
 // var app = express();
 
-const CardSchema = {
-  name: 'Card',
+const German_Cards_Schema = {
+  name: 'German-Cards',
   primaryKey: 'id',
   // schemaVersion: 0,
   properties: {
     id: "string", // key 
     cardNumber: 'string',
-    language: 'string',
     name: 'string',
     plural: 'string',
     secondary: 'string?',
@@ -22,19 +21,37 @@ const CardSchema = {
   }
 };
 
-const dbPath =path.join(__dirname + "/db/Cards.realm") ;
+const Ukrainian_Cards_Schema = {
+  name: 'Ukrainian-Cards',
+  primaryKey: 'id',
+  // schemaVersion: 0,
+  properties: {
+    id: "string", // key 
+    cardNumber: 'string',
+    name: 'string',
+    plural: 'string',
+    secondary: 'string?',
+    example: "string",
+    category: "string",
+    systemImageName: "string?",
+  }
+};
 
-const cardDB = new Realm({
-    path: dbPath,
-    schema: [CardSchema]
+const German_Cards_Path = path.join(__dirname + "/db/German-Cards.realm") ;
+const Ukrainian_Cards_Path = path.join(__dirname + "/db/Ukrainian-Cards.realm") ;
+
+const German_Cards = new Realm({
+    path: German_Cards_Path,
+    schema: [German_Cards_Schema]
   });
+  
 
-// const cardDB = new Realm({
-//   path: 'card.realm',
-//   schema: [CardSchema]
-// });
-// const t = cardDB.getSchema()
-// console.log(t);
-// .remove(className);
+const Ukrainian_Cards = new Realm({
+  path: Ukrainian_Cards_Path,
+  schema: [Ukrainian_Cards_Schema]
+});
 
-module.exports = cardDB;
+module.exports = {
+  German_Cards:German_Cards,
+   Ukrainian_Cards: Ukrainian_Cards 
+  };

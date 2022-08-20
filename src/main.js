@@ -2,33 +2,36 @@ const LoadWrapper = document.getElementById("load_section");
 const fileInput = document.getElementById("file_input");
 const textDataListElem = document.getElementById("text_data_list");
 const table = document.getElementById("table");
-const sortButton = document.getElementById("sort_by_card_number")
-const downloadDB = document.getElementById("download_Db")
-const sortBy = "";
+const headerSortButtons =Array.from( document.querySelectorAll("thead tr td"));
+
+let sortBy = "cardNumber";
 
 LoadWrapper.addEventListener("mousedown", handelLoad);
 fileInput.addEventListener("change", handelImage);
 
 window.addEventListener("load", () => {
+  for(let i =0;i <= headerSortButtons.length-2 ;i+=1 ){
+    const buttonItem = headerSortButtons[i];
+    buttonItem.addEventListener("click",()=>{
+      sortBy = buttonItem.innerHTML;
+      handelUpdateTable();
+    })
+  } 
   handelUpdateTable();
 });
 
-sortButton.addEventListener("click", ()=>{
-  axios
-    .get("/all-in-db?sort=cardNumber")
-    .then((res) => res.data)
-    .then((res) => {
-      // data = res;
-      updateTextDataListUi(res);
-    });
-})
-
 const handelUpdateTable = () => {
+  headerSortButtons.forEach(item=>{
+    if(item.innerHTML === sortBy){
+      item.style.color = "red";
+    } else{
+      item.style.color = "#fff";
+    }
+  });
   axios
-    .get("/all-in-db?sort=cardNumber")
+    .get(`/all-in-db?sort=${sortBy}`)
     .then((res) => res.data)
     .then((res) => {
-      // data = res;
       updateTextDataListUi(res);
     });
 };
@@ -67,8 +70,8 @@ function updateTextDataListUi(data) {
     deleteButton.addEventListener("click", (e) => {
       handelDeleteRow(item, e);
     });
-    actionCol.style.textAlign = "center";
-    actionCol.style.cursor = "pointer";
+    deleteButton.classList.add("row_Action")
+    actionCol.classList.add("row_Action_Wrapper")
     actionCol.appendChild(deleteButton);
     row.appendChild(actionCol);
 
@@ -109,33 +112,3 @@ function filesToBase64(images) {
       });
   });
 }
-
-// function getBase64(file) {
-//   var reader = new FileReader();
-//   reader.readAsDataURL(file);
-
-//   reader.onload = async () => {
-//     const newBase64 = reader.result.replace(/^data:image\/[a-z]+;base64,/, "");
-//     const textData = await getTextFromImage(newBase64).then((response) =>
-//       response.json()
-//     );
-//   };
-
-//   reader.onerror = function (error) {
-//     console.log("Error: ", error);
-//   };
-// }
-
-// function getTextFromImage(imageData) {
-//   return new Promise((resolve, reject) => {
-//     fetch("/get-image-data", {
-//       method: "post",
-//       body: JSON.stringify({ text: imageData }),
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//     }).then((res) => {
-//       resolve(res);
-//     });
-//   });
-// }

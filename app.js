@@ -1,9 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const uuid = require('uuid');
+const uuid = require("uuid");
 const url = require("url");
-
 
 const vision = require("@google-cloud/vision");
 const router = require("./server/router");
@@ -11,6 +10,9 @@ const router = require("./server/router");
 const fileUpload = require("express-fileupload");
 
 const db = require("./src/realm");
+
+const uk_db = db.Ukrainian_Cards;
+const de_db = db.German_Cards;
 
 const CREDANTIOLS = JSON.parse(
   JSON.stringify({
@@ -48,7 +50,6 @@ app.use(
     limits: { fileSize: 50 * 1024 * 1024 },
   })
 );
-// app.use(upload.array());
 
 app.use(
   bodyParser.json({ limit: "50mb", type: "application/json", extended: true })
@@ -60,93 +61,136 @@ app.use(
 
 app.use(
   bodyParser.urlencoded({
-    // parameterLimit: 100000,
     limit: "50mb",
     extended: true,
   })
 );
 
-app.use("/src", express.static(__dirname + "/src/"));
-app.use("/src", express.static(__dirname + "/src/db/Cards.realm"));
+app.use("/src", express.static(__dirname + "/src"));
+// app.use("/src", express.static(__dirname + "/src/db/"));
+app.use("/src", express.static(__dirname + "/src/db/German-Cards.realm"));
+app.use("/src", express.static(__dirname + "/src/db/Ukrainian_Cards.realm"));
 
 app.use("/", router);
 
 app.get("/all-in-db", async (req, res) => {
-  const queryObject = url.parse(req.url, true).query || {};
-  let allDB;
-  if(queryObject && queryObject.sort === "cardNumber" ){
-   allDB = await db.objects("Card").sorted("cardNumber");
-  }else{
-   allDB = await db.objects("Card").sorted("id");
-  }
+  const queryObject = url.parse(req.url, true).query;
+  const allDB = await getAllfromDBs(queryObject);
   const cards = JSON.parse(JSON.stringify(allDB));
   res.send(JSON.stringify(cards));
 });
 
 app.post("/delete-row", async (req, res) => {
-  const item =JSON.parse(req.body.body) ;
-
+  const item = JSON.parse(req.body.body);
   try {
-    let resalt;
-    const currenItem = await db
-      .objects("Card")
+    const currenItemUk = await uk_db
+      .objects("Ukrainian-Cards")
       .filter((userObj) => userObj.id == item.id);
-    resalt = db.write(async () => {
-      return await db.delete(currenItem);
-    });
-
-    return res.send(resalt);
+    if (currenItemUk.length > 0) {
+      await uk_db.write(async () => {
+        return await uk_db.delete(currenItemUk);
+      });
+      return res.send({status:"saccess"});
+    }
+    const currenItemDe = await de_db
+      .objects("German-Cards")
+      .filter((userObj) => userObj.id == item.id);
+    if (currenItemDe.length > 0) {
+       await de_db.write(async () => {
+        return await de_db.delete(currenItemDe);
+      });
+      return res.send({status:"saccess"});
+    }
   } catch (error) {
     console.log(error);
     return res.send(JSON.stringify(error));
   }
 });
 
-
-
 //  ---------- GOOGLE API ----------
 app.post("/get-image-data", async (req, res) => {
-
   const filePath = req.files.file.tempFilePath;
   try {
     const all = await client.textDetection(filePath);
-    //TODO:     SAVE image to folder
     const foolText = all[0].fullTextAnnotation.text.split("\n");
-    const leng = all[0].fullTextAnnotation.pages[0].property.detectedLanguages[0]
-      .languageCode;
-    // console.log("AAAAAAAAAA",foolText,foolText[foolText.length-1]);
-    try {
-      const test = await db.write(async () => {
-        db.create("Card", {
-          id: uuid.v4(),
-          cardNumber:foolText[0] || 0,
-          language: leng,
-          name: foolText[1],
-          plural: foolText[2],
-          secondary: foolText[foolText.length-3] || null,
-          example: foolText[foolText.length-2] || null,
-          category: foolText[foolText.length-1],
-          systemImageName: "",
+    const leng =
+      all[0].fullTextAnnotation.pages[0].property.detectedLanguages[0]
+        .languageCode;
+    if (leng === "de") {
+      try {
+        await saveDeRow(foolText);
+      } catch (error) {
+        console.log("DE DB ERROR \n", error);
+        res.send({
+          status: "error",
+          messige: "save DE DB Error",
         });
-      });
-    } catch (error) {
-      console.log("EEROR on DB", error);
-      throw error;
+        return;
+      }
+    } else if (leng === "uk" || leng === "ru") {
+      try {
+        await saveUkRow(foolText);
+      } catch (error) {
+        console.log("UK DB ERROR \n", error);
+        res.send({
+          status: "error",
+          messige: "save UK DB Error",
+        });
+        return;
+      }
     }
-
-    const allCards = db.objects("Card");
-    const allCardsData = JSON.parse(JSON.stringify(allCards));
-    res.send(JSON.stringify(foolText));
-
+    res.send({
+      status: "success",
+      // data: JSON.stringify(allDB),
+    });
     return;
   } catch (error) {
     console.log("ERROR =>>>>>>>>>>>> \n", error);
+    res.send({
+      status: "error",
+      messige: "main Error > GOOGLE API",
+    });
+    return;
   }
-
-  res.send([]);
 });
 
+const getAllfromDBs = async (queryObject = {sort: "cardNumber"}) => {
+  const query =queryObject.sort;
+    // queryObject && queryObject.sort === "cardNumber" ? "cardNumber" : "id";
 
+  const ukData = await uk_db.objects("Ukrainian-Cards").sorted(query);
+  const deData = await de_db.objects("German-Cards").sorted(query);
+  const allDB = [...ukData, ...deData];
+  return allDB;
+};
+
+const saveDeRow = async (foolText) =>
+  await de_db.write(async () => {
+    de_db.create("German-Cards", {
+      id: uuid.v4(),
+      cardNumber: foolText[0] || 0,
+      name: foolText[1],
+      plural: foolText[2],
+      secondary: foolText[foolText.length - 3] || null,
+      example: foolText[foolText.length - 2] || null,
+      category: foolText[foolText.length - 1],
+      systemImageName: "",
+    });
+  });
+
+const saveUkRow = async (foolText) =>
+  await uk_db.write(async () => {
+    uk_db.create("Ukrainian-Cards", {
+      id: uuid.v4(),
+      cardNumber: foolText[0] || 0,
+      name: foolText[1],
+      plural: foolText[2],
+      secondary: foolText[foolText.length - 3] || null,
+      example: foolText[foolText.length - 2] || null,
+      category: foolText[foolText.length - 1],
+      systemImageName: "",
+    });
+  });
 
 app.listen("3000", () => {
   // "192.168.1.108",
