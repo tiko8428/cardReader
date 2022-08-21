@@ -90,16 +90,16 @@ app.post("/delete-row", async (req, res) => {
       await uk_db.write(async () => {
         return await uk_db.delete(currenItemUk);
       });
-      return res.send({status:"saccess"});
+      return res.send({ status: "saccess" });
     }
     const currenItemDe = await de_db
       .objects("German-Cards")
       .filter((userObj) => userObj.id == item.id);
     if (currenItemDe.length > 0) {
-       await de_db.write(async () => {
+      await de_db.write(async () => {
         return await de_db.delete(currenItemDe);
       });
-      return res.send({status:"saccess"});
+      return res.send({ status: "saccess" });
     }
   } catch (error) {
     console.log(error);
@@ -107,6 +107,73 @@ app.post("/delete-row", async (req, res) => {
   }
 });
 
+app.get("/get-item", async (req, res) => {
+  const queryObject = url.parse(req.url, true).query;
+  const id = queryObject.id;
+
+  const currenItemUk = await uk_db
+    .objects("Ukrainian-Cards")
+    .filter((userObj) => userObj.id == id);
+
+  if (currenItemUk.length > 0) {
+    return res.send(JSON.stringify(currenItemUk[0]));
+  }
+
+  const currenItemDe = await de_db
+    .objects("German-Cards")
+    .filter((userObj) => userObj.id == id);
+  if (currenItemDe.length > 0) {
+    return res.send(JSON.stringify(currenItemDe[0]));
+  }
+});
+app.post("/updateRow", async (req, res) => {
+  const item = JSON.parse(req.body.body);
+  let len = "";
+  // let currentItem;
+  try {
+    const currenItemUk = await uk_db
+      .objects("Ukrainian-Cards")
+      .filter((userObj) => userObj.id == item.id);
+
+    if (currenItemUk.length > 0) {
+      len = "uk";
+      currentItem = currenItemUk[0];
+    } else {
+      const currenItemDe = await de_db
+        .objects("German-Cards")
+        .filter((userObj) => userObj.id == item.id);
+
+      if (currenItemDe.length > 0) {
+        len = "de";
+        currentItem = currenItemDe[0];
+      }
+    }
+
+    if (len === "de") {
+      await de_db.write(async () => {
+        currentItem.cardNumber = item.cardNumber;
+        currentItem.name = item.name;
+        currentItem.plural = item.plural;
+        currentItem.secondary = item.secondary;
+        currentItem.example = item.example;
+        currentItem.category = item.category;
+      });
+    } else if (len === "uk") {
+      await uk_db.write(async () => {
+        currentItem.cardNumber = item.cardNumber;
+        currentItem.name = item.name;
+        currentItem.plural = item.plural;
+        currentItem.secondary = item.secondary;
+        currentItem.example = item.example;
+        currentItem.category = item.category;
+      });
+    }
+  } catch (error) {
+    return res.send(JSON.stringify({ status: "error" }));
+  }
+
+  return res.send(JSON.stringify({ status: "success" }));
+});
 //  ---------- GOOGLE API ----------
 app.post("/get-image-data", async (req, res) => {
   const filePath = req.files.file.tempFilePath;
@@ -154,9 +221,9 @@ app.post("/get-image-data", async (req, res) => {
   }
 });
 
-const getAllfromDBs = async (queryObject = {sort: "cardNumber"}) => {
-  const query =queryObject.sort;
-    // queryObject && queryObject.sort === "cardNumber" ? "cardNumber" : "id";
+const getAllfromDBs = async (queryObject = { sort: "cardNumber" }) => {
+  const query = queryObject.sort;
+  // queryObject && queryObject.sort === "cardNumber" ? "cardNumber" : "id";
 
   const ukData = await uk_db.objects("Ukrainian-Cards").sorted(query);
   const deData = await de_db.objects("German-Cards").sorted(query);
@@ -192,7 +259,7 @@ const saveUkRow = async (foolText) =>
     });
   });
 
-app.listen("3000", () => {
+app.listen("3000","192.168.1.108", () => {
   // "192.168.1.108",
   console.log(`Example app listening \n`);
   // console.log("http:/192.168.1.108:3000");

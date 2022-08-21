@@ -1,30 +1,48 @@
 const LoadWrapper = document.getElementById("load_section");
 const fileInput = document.getElementById("file_input");
-const textDataListElem = document.getElementById("text_data_list");
 const table = document.getElementById("table");
-const headerSortButtons =Array.from( document.querySelectorAll("thead tr td"));
+const deleteButton = document.getElementById("deleteRow");
+const editButton = document.getElementById("editRow");
+
+const headerSortButtons = Array.from(document.querySelectorAll("thead tr td"));
 
 let sortBy = "cardNumber";
-
+let selectedItem = "";
 LoadWrapper.addEventListener("mousedown", handelLoad);
 fileInput.addEventListener("change", handelImage);
 
 window.addEventListener("load", () => {
-  for(let i =0;i <= headerSortButtons.length-2 ;i+=1 ){
+  for (let i = 1; i <= headerSortButtons.length - 1; i += 1) {
     const buttonItem = headerSortButtons[i];
-    buttonItem.addEventListener("click",()=>{
+    buttonItem.addEventListener("click", () => {
       sortBy = buttonItem.innerHTML;
       handelUpdateTable();
-    })
-  } 
+    });
+  }
   handelUpdateTable();
+  deleteButton.addEventListener("click", () => {
+    if (selectedItem) {
+      handelDeleteRow(selectedItem);
+    }
+  });
+  editButton.addEventListener("click", () => {
+    if (selectedItem) {
+      axios
+        .get(`/get-item?id=${selectedItem}`)
+        .then((res) => res.data)
+        .then((res) => {
+          updatePopupData(res);
+          handelOpenPopup();
+        });
+    }
+  });
 });
 
 const handelUpdateTable = () => {
-  headerSortButtons.forEach(item=>{
-    if(item.innerHTML === sortBy){
+  headerSortButtons.forEach((item) => {
+    if (item.innerHTML === sortBy) {
       item.style.color = "red";
-    } else{
+    } else {
       item.style.color = "#fff";
     }
   });
@@ -36,8 +54,18 @@ const handelUpdateTable = () => {
     });
 };
 
-const handelDeleteRow = (item, e) => {
-  const currentItem = JSON.stringify(item);
+const updateSelection = () => {
+  const checkboxes = document.querySelectorAll("table input");
+  const checkboxArray = Array.from(checkboxes);
+  checkboxArray.forEach((item) => {
+    if (item.name !== selectedItem) {
+      item.checked = false;
+    }
+  });
+};
+
+const handelDeleteRow = (id) => {
+  const currentItem = JSON.stringify({ id: id });
   axios
     .post("/delete-row", {
       body: currentItem,
@@ -54,27 +82,34 @@ function updateTextDataListUi(data) {
   table.innerHTML = "";
   for (const item of data) {
     const row = document.createElement("tr");
+
+    const actionCol = document.createElement("td");
+    const selectCol = document.createElement("input");
+    selectCol.classList.add("selectInput");
+
+    selectCol.type = "checkbox";
+
+    selectCol.name = item.id;
+    selectCol.addEventListener("click", (e) => {
+      const targetId = e.target.name;
+      if (targetId === selectedItem) {
+        selectedItem = "";
+      } else {
+        selectedItem = targetId;
+      }
+      updateSelection();
+    });
+    actionCol.classList.add("row_Action_Wrapper");
+    actionCol.appendChild(selectCol);
+    row.appendChild(actionCol);
     for (const key of Object.keys(item)) {
       const val = item[key];
-      if (key !== "id" & key !== "systemImageName") {
+      if ((key !== "id") & (key !== "systemImageName")) {
         const col = document.createElement("td");
         col.textContent = val;
         row.appendChild(col);
       }
     }
-
-    const actionCol = document.createElement("td");
-    const deleteButton = document.createElement("button");
-    deleteButton.innerText = "DELETE";
-    deleteButton.name = item.id;
-    deleteButton.addEventListener("click", (e) => {
-      handelDeleteRow(item, e);
-    });
-    deleteButton.classList.add("row_Action")
-    actionCol.classList.add("row_Action_Wrapper")
-    actionCol.appendChild(deleteButton);
-    row.appendChild(actionCol);
-
     table.appendChild(row);
   }
 }
@@ -107,8 +142,66 @@ function filesToBase64(images) {
       })
       .then((res) => res.data)
       .then((data) => {
-        console.log(data);
         handelUpdateTable();
       });
   });
 }
+
+// popup
+const popup = document.getElementById("popup");
+const closePopupButton = document.getElementById("closePopup");
+const savePopupButton = document.getElementById("saveRow");
+
+closePopupButton.addEventListener("click", () => {
+  handelClosePopup();
+  selectedItem = "";
+  updateSelection();
+});
+
+savePopupButton.addEventListener("click", async ()=>{
+  await handelSavePopup()
+  handelClosePopup();
+  selectedItem = "";
+  updateSelection();
+})
+
+const updatePopupData = (data)=>{
+  const inputs = popup.querySelectorAll("input");
+  const inputArray = Array.from(inputs);
+  inputArray.forEach(item=>{
+    item.value = data[item.name];
+  })
+};
+const handelOpenPopup = () => {
+  popup.style.display = "flex";
+};
+
+const handelClosePopup = () => {
+  popup.style.display = "none";
+};
+
+const handelSavePopup = async () => {
+  
+  const inputs = popup.querySelectorAll("input");
+  const inputArray = Array.from(inputs);
+  let data = {
+    id: selectedItem
+  };
+  inputArray.forEach(item=>{
+    const key = item.name
+    const value = item.value 
+    data[key] = value;
+  })
+  axios.post("updateRow", {
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    }
+  }).then(res=>res.data)
+  .then((data)=>{
+    if(data.status === "error"){
+      alert("error in server \n CONTACT TO TIKO")
+    }
+    handelUpdateTable();
+  })
+};
