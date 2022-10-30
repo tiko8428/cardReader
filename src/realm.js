@@ -23,7 +23,7 @@ const Ukrainian_Cards_Schema = {
   name: 'Card',
   properties: {
     id: 'string?',
-    cardNumber: 'string?,
+    cardNumber: 'string?',
     name: 'string?',
     plural: 'string?',
     secondary: 'string?',
