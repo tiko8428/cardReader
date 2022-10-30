@@ -6,34 +6,30 @@ const path = require("path");
 // var app = express();
 
 const German_Cards_Schema = {
-  name: 'German-Cards',
-  primaryKey: 'id',
-  // schemaVersion: 0,
+  name: 'Card',
   properties: {
-    id: "string", // key 
-    cardNumber: 'string',
-    name: 'string',
-    plural: 'string',
+    id: 'string?',
+    cardNumber: 'int?',
+    name: 'string?',
+    plural: 'string?',
     secondary: 'string?',
-    example: "string",
-    category: "string",
-    systemImageName: "string?",
+    example: 'string?',
+    category: 'string?',
+    systemImageName: 'string?'
   }
 };
 
 const Ukrainian_Cards_Schema = {
-  name: 'Ukrainian-Cards',
-  primaryKey: 'id',
-  // schemaVersion: 0,
+  name: 'Card',
   properties: {
-    id: "string", // key 
-    cardNumber: 'string',
-    name: 'string',
-    plural: 'string',
+    id: 'string?',
+    cardNumber: 'int?',
+    name: 'string?',
+    plural: 'string?',
     secondary: 'string?',
-    example: "string",
-    category: "string",
-    systemImageName: "string?",
+    example: 'string?',
+    category: 'string?',
+    systemImageName: 'string?'
   }
 };
 

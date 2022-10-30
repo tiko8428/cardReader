@@ -225,15 +225,15 @@ const getAllfromDBs = async (queryObject = { sort: "cardNumber" }) => {
   const query = queryObject.sort;
   // queryObject && queryObject.sort === "cardNumber" ? "cardNumber" : "id";
 
-  const ukData = await uk_db.objects("Ukrainian-Cards").sorted(query);
-  const deData = await de_db.objects("German-Cards").sorted(query);
+  const ukData = await uk_db.objects("Card").sorted(query);
+  const deData = await de_db.objects("Card").sorted(query);
   const allDB = [...ukData, ...deData];
   return allDB;
 };
 
 const saveDeRow = async (foolText) =>
   await de_db.write(async () => {
-    de_db.create("German-Cards", {
+    de_db.create("Card", {
       id: uuid.v4(),
       cardNumber: foolText[0] || 0,
       name: foolText[1],
@@ -247,7 +247,7 @@ const saveDeRow = async (foolText) =>
 
 const saveUkRow = async (foolText) =>
   await uk_db.write(async () => {
-    uk_db.create("Ukrainian-Cards", {
+    uk_db.create("Card", {
       id: uuid.v4(),
       cardNumber: foolText[0] || 0,
       name: foolText[1],
@@ -259,7 +259,7 @@ const saveUkRow = async (foolText) =>
     });
   });
 
-app.listen("3000","192.168.1.108", () => {
+app.listen("3000", () => {
   // "192.168.1.108",
   console.log(`Example app listening \n`);
   // console.log("http:/192.168.1.108:3000");
