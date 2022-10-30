@@ -9,7 +9,7 @@ const German_Cards_Schema = {
   name: 'Card',
   properties: {
     id: 'string?',
-    cardNumber: 'int?',
+    cardNumber: 'string?',
     name: 'string?',
     plural: 'string?',
     secondary: 'string?',
@@ -23,7 +23,7 @@ const Ukrainian_Cards_Schema = {
   name: 'Card',
   properties: {
     id: 'string?',
-    cardNumber: 'int?',
+    cardNumber: 'string?,
     name: 'string?',
     plural: 'string?',
     secondary: 'string?',
