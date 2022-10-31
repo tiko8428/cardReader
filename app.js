@@ -132,7 +132,7 @@ app.post("/updateRow", async (req, res) => {
   // let currentItem;
   try {
     const currenItemUk = await uk_db
-      .objects("Ukrainian-Cards")
+      .objects("Card")
       .filter((userObj) => userObj.id == item.id);
 
     if (currenItemUk.length > 0) {
@@ -140,7 +140,7 @@ app.post("/updateRow", async (req, res) => {
       currentItem = currenItemUk[0];
     } else {
       const currenItemDe = await de_db
-        .objects("German-Cards")
+        .objects("Card")
         .filter((userObj) => userObj.id == item.id);
 
       if (currenItemDe.length > 0) {
