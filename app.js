@@ -84,7 +84,7 @@ app.post("/delete-row", async (req, res) => {
   const item = JSON.parse(req.body.body);
   try {
     const currenItemUk = await uk_db
-      .objects("Ukrainian-Cards")
+      .objects("Card")
       .filter((userObj) => userObj.id == item.id);
     if (currenItemUk.length > 0) {
       await uk_db.write(async () => {
@@ -93,7 +93,7 @@ app.post("/delete-row", async (req, res) => {
       return res.send({ status: "saccess" });
     }
     const currenItemDe = await de_db
-      .objects("German-Cards")
+      .objects("Card")
       .filter((userObj) => userObj.id == item.id);
     if (currenItemDe.length > 0) {
       await de_db.write(async () => {
@@ -112,7 +112,7 @@ app.get("/get-item", async (req, res) => {
   const id = queryObject.id;
 
   const currenItemUk = await uk_db
-    .objects("Ukrainian-Cards")
+    .objects("Card")
     .filter((userObj) => userObj.id == id);
 
   if (currenItemUk.length > 0) {
@@ -120,16 +120,17 @@ app.get("/get-item", async (req, res) => {
   }
 
   const currenItemDe = await de_db
-    .objects("German-Cards")
+    .objects("Card")
     .filter((userObj) => userObj.id == id);
   if (currenItemDe.length > 0) {
     return res.send(JSON.stringify(currenItemDe[0]));
   }
 });
+
 app.post("/updateRow", async (req, res) => {
   const item = JSON.parse(req.body.body);
   let len = "";
-  // let currentItem;
+  let currentItem;
   try {
     const currenItemUk = await uk_db
       .objects("Card")
@@ -174,6 +175,7 @@ app.post("/updateRow", async (req, res) => {
 
   return res.send(JSON.stringify({ status: "success" }));
 });
+
 //  ---------- GOOGLE API ----------
 app.post("/get-image-data", async (req, res) => {
   const filePath = req.files.file.tempFilePath;
@@ -212,7 +214,8 @@ app.post("/get-image-data", async (req, res) => {
     });
     return;
   } catch (error) {
-    console.log("ERROR =>>>>>>>>>>>> \n", error);
+    console.log("ERROR =>>>>>>>>>>>>");
+    res.status(400)
     res.send({
       status: "error",
       messige: "main Error > GOOGLE API",
@@ -221,13 +224,22 @@ app.post("/get-image-data", async (req, res) => {
   }
 });
 
-const getAllfromDBs = async (queryObject = { sort: "cardNumber" }) => {
+const getAllfromDBs = async (queryObject = { sort: "cardNumber", leng:"all" }) => {
   const query = queryObject.sort;
-  // queryObject && queryObject.sort === "cardNumber" ? "cardNumber" : "id";
-
+  const leng = queryObject.leng || "all";
+  // queryObject && queryObject.sort === "cardNumber" ? "cardNumber" : "id";  
   const ukData = await uk_db.objects("Card").sorted(query);
   const deData = await de_db.objects("Card").sorted(query);
-  const allDB = [...ukData, ...deData];
+  let allDB = [];
+  if (leng === "all") {
+    allDB = [...ukData, ...deData];
+  } else if (leng === "uk") {
+    allDB = [...ukData];
+  } else if (leng === "de") {
+    allDB = [...deData];
+  }
+  // const ukData = await uk_db.objects("Card").sorted(query);
+  // const deData = await de_db.objects("Card").sorted(query);
   return allDB;
 };
 

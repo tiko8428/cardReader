@@ -3,28 +3,33 @@ const fileInput = document.getElementById("file_input");
 const table = document.getElementById("table");
 const deleteButton = document.getElementById("deleteRow");
 const editButton = document.getElementById("editRow");
+const selectShow = document.getElementById("selectShow");
 
 const headerSortButtons = Array.from(document.querySelectorAll("thead tr td"));
 
 let sortBy = "cardNumber";
 let selectedItem = "";
+let show = "";
 LoadWrapper.addEventListener("mousedown", handelLoad);
 fileInput.addEventListener("change", handelImage);
 
 window.addEventListener("load", () => {
+
   for (let i = 1; i <= headerSortButtons.length - 1; i += 1) {
     const buttonItem = headerSortButtons[i];
     buttonItem.addEventListener("click", () => {
       sortBy = buttonItem.innerHTML;
+      sortBy = buttonItem.innerHTML;
       handelUpdateTable();
     });
   }
-  handelUpdateTable();
+
   deleteButton.addEventListener("click", () => {
     if (selectedItem) {
       handelDeleteRow(selectedItem);
     }
   });
+
   editButton.addEventListener("click", () => {
     if (selectedItem) {
       axios
@@ -36,6 +41,15 @@ window.addEventListener("load", () => {
         });
     }
   });
+
+  selectShow.addEventListener("change",(e)=>{
+    console.log(e.target.value)
+    show = e.target.value || "all"
+    handelUpdateTable();
+
+  })
+
+  handelUpdateTable();
 });
 
 const handelUpdateTable = () => {
@@ -47,10 +61,19 @@ const handelUpdateTable = () => {
     }
   });
   axios
-    .get(`/all-in-db?sort=${sortBy}`)
+    .get(`/all-in-db?sort=${sortBy}&leng=${show || "all"}`)
     .then((res) => res.data)
     .then((res) => {
-      updateTextDataListUi(res);
+      if (sortBy === "cardNumber") {
+        const filteredData = res.sort((a, b) => {
+          const num1 = parseInt(a.cardNumber) || 0;
+          const num2 = parseInt(b.cardNumber) || 0; 
+           return num1- num2;
+        } );
+        updateTextDataListUi(filteredData);
+      }else{
+        updateTextDataListUi(res);
+      }
     });
 };
 
@@ -75,12 +98,17 @@ const handelDeleteRow = (id) => {
     })
     .then((res) => {
       handelUpdateTable();
+      success();
+    }).catch(()=>{
+      error();
     });
 };
 
 function updateTextDataListUi(data) {
   table.innerHTML = "";
+  let rowNum =0
   for (const item of data) {
+    rowNum+=1;
     const row = document.createElement("tr");
 
     const actionCol = document.createElement("td");
@@ -100,6 +128,9 @@ function updateTextDataListUi(data) {
       updateSelection();
     });
     actionCol.classList.add("row_Action_Wrapper");
+    const rowNumber = document.createElement("span");
+    rowNumber.innerHTML= "N" + rowNum
+    actionCol.appendChild(rowNumber);
     actionCol.appendChild(selectCol);
     row.appendChild(actionCol);
     for (const key of Object.keys(item)) {
@@ -143,7 +174,10 @@ function filesToBase64(images) {
       .then((res) => res.data)
       .then((data) => {
         handelUpdateTable();
-      });
+        success();
+      }).catch(err => {
+        error()
+      })
   });
 }
 
@@ -158,17 +192,17 @@ closePopupButton.addEventListener("click", () => {
   updateSelection();
 });
 
-savePopupButton.addEventListener("click", async ()=>{
+savePopupButton.addEventListener("click", async () => {
   await handelSavePopup()
   handelClosePopup();
   selectedItem = "";
   updateSelection();
 })
 
-const updatePopupData = (data)=>{
+const updatePopupData = (data) => {
   const inputs = popup.querySelectorAll("input");
   const inputArray = Array.from(inputs);
-  inputArray.forEach(item=>{
+  inputArray.forEach(item => {
     item.value = data[item.name];
   })
 };
@@ -181,15 +215,15 @@ const handelClosePopup = () => {
 };
 
 const handelSavePopup = async () => {
-  
+
   const inputs = popup.querySelectorAll("input");
   const inputArray = Array.from(inputs);
   let data = {
     id: selectedItem
   };
-  inputArray.forEach(item=>{
+  inputArray.forEach(item => {
     const key = item.name
-    const value = item.value 
+    const value = item.value
     data[key] = value;
   })
   axios.post("updateRow", {
@@ -197,11 +231,27 @@ const handelSavePopup = async () => {
     headers: {
       "Content-Type": "application/json",
     }
-  }).then(res=>res.data)
-  .then((data)=>{
-    if(data.status === "error"){
-      alert("error in server \n CONTACT TO TIKO")
-    }
-    handelUpdateTable();
-  })
+  }).then(res => res.data)
+    .then((data) => {
+      if (data.status === "error") {
+        alert("error in server \n CONTACT TO TIKO")
+      }
+      handelUpdateTable();
+    })
 };
+
+function success() {
+  const elem = document.getElementById("success");
+  elem.style.display = "block";
+  setTimeout(() => {
+    elem.style.display = "none"
+  }, 2500)
+}
+
+function error() {
+  const elem = document.getElementById("error");
+  elem.style.display = "block";
+  setTimeout(() => {
+    elem.style.display = "none"
+  }, 2500)
+}

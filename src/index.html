@@ -8,6 +8,12 @@
     <link rel="stylesheet" href="src/style.css">
 </head>
 <body>
+    <div id="success" >
+        <span>success</span> 
+    </div>
+    <div id="error" >
+        <span>ERROR</span> 
+    </div>
     <div class="header">
         <ul class="header_menu">
             <li><a id="download_Db_uk" href="/src/db/Ukrainian-Cards.realm" >Download Ukrainian</a></li>
@@ -21,6 +27,15 @@
     <div class="action_Wrapper">
         <button id="deleteRow">Delete</button>
         <button id="editRow">Edit</button>
+        <select id="selectShow">
+            <option value="all">Show All</option>
+            <option value="uk">Show UK</option>
+            <option value="de">Show DE</option>
+        </select>
+        <!-- <button id="showAll">Show All</button>
+        <button id="showDe">Show DE</button>
+        <button id="showUk">Show UK</button> -->
+
     </div>
 
     <div id="popup" class="popupWrapper">
