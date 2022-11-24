@@ -6,7 +6,8 @@ const url = require("url");
 
 const vision = require("@google-cloud/vision");
 const router = require("./server/router");
-
+const jsonRouter = require("./server/jsonRouter");
+const helper = require("./server/hellper");
 const fileUpload = require("express-fileupload");
 
 const db = require("./src/realm");
@@ -67,15 +68,18 @@ app.use(
 );
 
 app.use("/src", express.static(__dirname + "/src"));
+app.use("/src/json/data/en.json", express.static(__dirname + "/src/json/data"));
+
 // app.use("/src", express.static(__dirname + "/src/db/"));
 app.use("/src", express.static(__dirname + "/src/db/German-Cards.realm"));
 app.use("/src", express.static(__dirname + "/src/db/Ukrainian_Cards.realm"));
 
 app.use("/", router);
+app.use("/json", jsonRouter);
 
-app.get("/all-in-db", async (req, res) => {
+app.get("/all-in-db", (req, res) => {
   const queryObject = url.parse(req.url, true).query;
-  const allDB = await getAllfromDBs(queryObject);
+  const allDB =  getAllfromDBs(queryObject);
   const cards = JSON.parse(JSON.stringify(allDB));
   res.send(JSON.stringify(cards));
 });
@@ -224,12 +228,49 @@ app.post("/get-image-data", async (req, res) => {
   }
 });
 
-const getAllfromDBs = async (queryObject = { sort: "cardNumber", leng:"all" }) => {
+app.post("/get-data-array", async (req, res) => {
+  const filePath = req.files.file.tempFilePath;
+  try {
+    const all = await client.textDetection(filePath);
+    const foolText = all[0].fullTextAnnotation.text.split("\n");
+    const lang =
+      all[0].fullTextAnnotation.pages[0].property.detectedLanguages[0]
+        .languageCode;
+    const formatedData = {
+      cardNumber: foolText[0],
+      field1: "",
+      field2: "",
+      field3: "",
+      field4: "",
+      field5: "",
+      field6: "",
+      category: foolText[foolText.length - 2],
+      imageName: "",
+    }
+    let counter = 1
+    foolText.forEach((item, index) => {
+      if (index !== 0 && index !== foolText.length - 2 && counter<=6) {
+        formatedData["field" + counter] = item;
+        counter += 1;
+      }
+    })
+    res.send({ row:formatedData, lang: lang!=="de"? "ua": lang });
+  } catch (error) {
+    res.status(400)
+    res.send({
+      status: "error",
+      error: "main Error > GOOGLE API",
+    });
+    return;
+  }
+});
+
+const getAllfromDBs =  (queryObject = { sort: "cardNumber", leng: "all" }) => {
   const query = queryObject.sort;
   const leng = queryObject.leng || "all";
   // queryObject && queryObject.sort === "cardNumber" ? "cardNumber" : "id";  
-  const ukData = await uk_db.objects("Card").sorted(query);
-  const deData = await de_db.objects("Card").sorted(query);
+  const ukData =  uk_db.objects("Card").sorted(query);
+  const deData =  de_db.objects("Card").sorted(query);
   let allDB = [];
   if (leng === "all") {
     allDB = [...ukData, ...deData];
@@ -271,8 +312,42 @@ const saveUkRow = async (foolText) =>
     });
   });
 
+
+  async function migrateUA (){
+    
+    const res = getAllfromDBs({ sort: "cardNumber", leng: "uk" })
+    const formatRes = JSON.parse(JSON.stringify(res));
+    const newjson = {};
+
+    formatRes.forEach(item=>{
+      const formatedData = {
+        cardNumber: item.cardNumber,
+        field1: item.name,
+        field2: item.plural,
+        field3: item.secondary,
+        field4: item.example,
+        field5: "",
+        field6: "",
+        category: item.category,
+        imageName: "",
+      }
+      if(newjson.hasOwnProperty(item.cardNumber)){
+        const newCardNumber = item.cardNumber +"/" + Math.floor(Math.random() * 1000); ; 
+        newjson[newCardNumber] = {...formatedData, cardNumber: newCardNumber};
+      }else{
+        newjson[item.cardNumber] = formatedData;
+      }
+    })
+    helper.saveJson("ua", newjson);
+
+    // console.log(formatRes);
+  }
+  // migrateUA();
+
 app.listen("3000", () => {
   // "192.168.1.108",
   console.log(`Example app listening \n`);
   // console.log("http:/192.168.1.108:3000");
 });
+
+

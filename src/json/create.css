@@ -1,0 +1,91 @@
+.popupCreateWrapper {
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(205, 228, 227, .6);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.popupCreateBackground {
+  background-color: #ccc;
+  width: 350px;
+  padding: 10px 20px;
+  border-radius: 4px;
+  box-shadow: inset 0 -3em 3em rgba(0, 0, 0, 0.1), 0 0 0 2px rgb(255, 255, 255),
+  0.3em 0.3em 1em rgba(0, 0, 0, 0.3);
+}
+
+.popupCreateBackground h3 {
+  text-align: center;
+  color: #3559e8;
+  font-size: 25px;
+  margin: 20px 0;
+}
+
+.popupCreateHeader {
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.fieldWrapper {
+  width: 100%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  justify-content: space-between;
+}
+
+.fieldWrapper label {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fieldWrapper input[type=text] {
+  padding: 5px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: none
+}
+
+.popupCreateActions {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#saveNewRow {
+  padding: 5px 20px;
+  font-size: 20px;
+  background-color: aquamarine;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#saveNewRow:hover {
+  color: red
+}
+
+#closeCreatePopup {
+  padding: 5px 20px;
+  font-size: 20px;
+  background-color: red;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#closeCreatePopup:hover {
+  color: black
+}

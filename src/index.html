@@ -1,105 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="src/style.css">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Realm</title>
+  <link rel="stylesheet" href="src/style.css">
 </head>
+
 <body>
-    <div id="success" >
-        <span>success</span> 
-    </div>
-    <div id="error" >
-        <span>ERROR</span> 
-    </div>
-    <div class="header">
-        <ul class="header_menu">
-            <li><a id="download_Db_uk" href="/src/db/Ukrainian-Cards.realm" >Download Ukrainian</a></li>
-            <li><a id="download_Db_de" href="/src/db/German-Cards.realm">Download German</a></li>
-        </ul>
-    </div>
-    <div id="load_section" class="load_wrapper">
-        <input type="file" id="file_input" multiple="multiple">
-        <span >Click to load image</span>
-    </div>
-    <div class="action_Wrapper">
-        <button id="deleteRow">Delete</button>
-        <button id="editRow">Edit</button>
-        <select id="selectShow">
-            <option value="all">Show All</option>
-            <option value="uk">Show UK</option>
-            <option value="de">Show DE</option>
-        </select>
-        <!-- <button id="showAll">Show All</button>
+  <div id="success">
+    <span>success</span>
+  </div>
+  <div id="error">
+    <span>ERROR</span>
+  </div>
+  <div class="header">
+    <ul class="header_menu">
+      <li><a id="download_Db_uk" href="/src/db/Ukrainian-Cards.realm">Download Ukrainian</a></li>
+      <li><a id="download_Db_de" href="/src/db/German-Cards.realm">Download German</a></li>
+    </ul>
+  </div>
+  <div id="load_section" class="load_wrapper">
+    <input type="file" id="file_input" multiple="multiple">
+    <span>Click to load image</span>
+  </div>
+  <div class="action_Wrapper">
+    <button id="deleteRow">Delete</button>
+    <button id="editRow">Edit</button>
+    <select id="selectShow">
+      <option value="all">Show All</option>
+      <option value="uk">Show UK</option>
+      <option value="de">Show DE</option>
+    </select>
+    <!-- <button id="showAll">Show All</button>
         <button id="showDe">Show DE</button>
         <button id="showUk">Show UK</button> -->
 
+  </div>
+
+  <div id="popup" class="popupWrapper">
+    <div class="popup">
+      <label>
+        cardNumber
+        <input type="text" name="cardNumber" value="some cardNumber">
+      </label>
+
+      <label>
+        name
+        <input name="name" type="text" value="name">
+      </label>
+
+      <label>
+        plural
+        <input name="plural" type="text" value="plural">
+      </label>
+
+      <label>
+        secondary
+        <input name="secondary" type="text" value="secondary">
+      </label>
+
+      <label>
+        example
+        <input name="example" type="text" value="example">
+      </label>
+
+      <label>
+        category
+        <input name="category" type="text" value="category">
+      </label>
+      <div class="popupActions">
+        <button id="closePopup">CLOSE</button>
+        <button id="saveRow">SAVE</button>
+      </div>
+
     </div>
-
-    <div id="popup" class="popupWrapper">
-        <div class="popup">
-            <label>
-                cardNumber
-                <input type="text"  name="cardNumber" value="some cardNumber">
-            </label>
-
-            <label >
-                name
-                <input name="name" type="text" value="name">
-            </label>
-
-            <label>
-                plural
-                <input name="plural" type="text" value="plural">
-            </label>
-
-            <label>
-                secondary
-                <input name="secondary" type="text" value="secondary">
-            </label>
-
-            <label>
-                example
-                <input name="example" type="text" value="example">
-            </label>
-
-            <label>
-                category
-                <input name="category" type="text" value="category">
-            </label>
-            <div class="popupActions">
-                <button id="closePopup">CLOSE</button>
-                <button id="saveRow">SAVE</button>
-            </div>
-
-        </div>
-    </div>
+  </div>
 
 
-    <div class="table_wrapper">
-    <table >
-        <thead>
-            <tr>
-                <td>N</td>
-                <td>cardNumber</td>
-                <td>name</td>
-                <td>plural</td>
-                <td>secondary</td>
-                <td>example</td>
-                <td>category</td>
-                <!-- <td>Actions</td> -->
-            </tr>
-        </thead>
-        <tbody id="table">
+  <div class="table_wrapper">
+    <table>
+      <thead>
+        <tr>
+          <td>N</td>
+          <td>cardNumber</td>
+          <td>name</td>
+          <td>plural</td>
+          <td>secondary</td>
+          <td>example</td>
+          <td>category</td>
+          <!-- <td>Actions</td> -->
+        </tr>
+      </thead>
+      <tbody id="table">
 
-        </tbody>
+      </tbody>
     </table>
-</div>
-    <!-- <div id="text_data_list" class="text_data_list_wrapper"></div> -->
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
-   <script src="src/main.js" ></script>
+  </div>
+  <!-- <div id="text_data_list" class="text_data_list_wrapper"></div> -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
+  <script src="src/main.js"></script>
 </body>
+
 </html>

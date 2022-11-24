@@ -5,17 +5,32 @@ const path = require("path");
 // const preDb = require("./German-Cards.realm");
 // var app = express();
 
+// TO DO
+/*  
+  A1      A2     B1-1  B1-2  B2 C1
+  A1-uk   A2-uk
+  A1-ru   A2-ru
+*/
+
+/*
+ edit   
+ from image 
+ edit
+*/
+
 const German_Cards_Schema = {
   name: 'Card',
   properties: {
     id: 'string?',
     cardNumber: 'string?',
-    name: 'string?',
-    plural: 'string?',
-    secondary: 'string?',
-    example: 'string?',
+    name: 'string?', // field1
+    plural: 'string?',// fealsd2
+    secondary: 'string?', // fealsd3
+    example: 'string?',// fealsd4
     category: 'string?',
-    systemImageName: 'string?'
+    systemImageName: 'string?' // imageName
+    //fealsd5 
+    // fealsd6
   }
 };
 

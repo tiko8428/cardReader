@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self';"/> -->
+  <title>JSON</title>
+  <link rel="stylesheet" href="src/style.css">
+  <link rel="stylesheet" href="src/json/jsonStyle.css">
+  <link rel="stylesheet" href="src/json/create.css">
+</head>
+
+<body>
+  <div id="success">
+    <span>success</span>
+  </div>
+  <div id="error">
+    <span>ERROR</span>
+  </div>
+  <div class="header">
+    <select name="languges-json" id="dwownloadSelect">
+      <option value="de">DE</option>
+      <option value="ua">UA</option>
+      <option value="en">EN</option>
+      <option value="ru">RU</option>
+    </select>
+    <button id="downloadJson">
+      DOWNLOAD
+    </button>
+  </div>
+  <div id="load_section" class="load_wrapper">
+    <input type="file" id="file_input" multiple="multiple">
+    <span>Click to load image</span>
+  </div>
+  <div class="action_Wrapper">
+    <button id="deleteRow">Delete</button>
+    <button id="editRow">Edit</button>
+    <button id="creteRow">Create</button>
+    <select id="selectShow">
+      <option value="de">DE</option>
+      <option value="ua">UA</option>
+      <option value="en">EN</option>
+      <option value="ru">RU</option>
+    </select>
+  </div>
+  
+  <div id="popupCreate" class="popupCreateWrapper">
+    <div class="popupCreateBackground">
+      <h3> Create Card</h3>
+    <div class="popupCreateHeader">
+      <select id="selectCreateLanguage">
+        <option value="de">DE</option>
+        <option value="ua">UA</option>
+        <option value="en">EN</option>
+        <option value="ru">RU</option>
+      </select>
+    </div>
+    <div class="fieldWrapper" id="crateFieldWrapper">
+      <label >
+        Card Number
+        <input name="cardNumber"  placeholder="card Number" type="text" >
+      </label>
+      <label>
+        field1
+        <input name="field1" placeholder="name" type="text" >
+      </label>
+
+      <label>
+        field2
+        <input name="field2" placeholder="plural" type="text">
+      </label>
+
+      <label>
+        field3
+        <input name="field3" placeholder="secondary" type="text">
+      </label>
+
+      <label>
+        field4
+        <input name="field4" placeholder="example" type="text">
+      </label>
+      <label>
+        field5
+        <input name="field5" placeholder="fealsd5" type="text" >
+      </label>
+      <label>
+        field6
+        <input name="field6" placeholder="fealsd6" type="text" >
+      </label>
+      <label>
+        category
+        <input name="category" placeholder="category" type="text" >
+      </label>
+    </div>
+    <div class="popupCreateActions">
+      <button id="closeCreatePopup">CLOSE</button>
+      <button id="saveNewRow">SAVE</button>
+    </div>
+  </div>
+  </div>
+
+  <div id="popupEdit" class="popupCreateWrapper">
+    <div class="popupCreateBackground">
+      <h3> Edit Card</h3>
+    <div class="popupCreateHeader">
+      <select id="selectShowLanguage">
+        <option value="de">DE</option>
+        <option value="ua">UA</option>
+        <option value="en">EN</option>
+        <option value="ru">RU</option>
+      </select>
+    </div>
+    <div class="fieldWrapper">
+      <label style="color:red" >
+        Card Number
+        <input  name="cardNumber"  placeholder="card Number" type="text" >
+      </label>
+      <label>
+        field1
+        <input name="field1" placeholder="name" type="text" >
+      </label>
+
+      <label>
+        field2
+        <input name="field2" placeholder="plural" type="text">
+      </label>
+
+      <label>
+        field3
+        <input name="field3" placeholder="secondary" type="text">
+      </label>
+
+      <label>
+        field4
+        <input name="field4" placeholder="example" type="text">
+      </label>
+      <label>
+        field5
+        <input name="field5" placeholder="fealsd5" type="text" >
+      </label>
+      <label>
+        field6
+        <input name="field6" placeholder="fealsd6" type="text" >
+      </label>
+      <label>
+        category
+        <input name="category" placeholder="category" type="text" >
+      </label>
+    </div>
+    <div class="popupCreateActions">
+      <button id="closeEditPopup">CLOSE</button>
+      <button id="saveChanges">SAVE</button>
+    </div>
+  </div>
+  </div>
+
+  <!-- <div id="popup" class="popupWrapper">
+    <div class="popup">
+      <label>
+        cardNumber
+        <input type="text" name="cardNumber" value="some cardNumber">
+      </label>
+
+      <label>
+        field1
+        <input name="name" type="text" value="name">
+      </label>
+
+      <label>
+        fealsd2
+        <input name="plural" type="text" value="plural">
+      </label>
+
+      <label>
+        fealsd3
+        <input name="secondary" type="text" value="secondary">
+      </label>
+
+      <label>
+        fealsd4
+        <input name="example" type="text" value="example">
+      </label>
+
+      <label>
+        category
+        <input name="category" type="text" value="category">
+      </label>
+      <label>
+        fealsd5
+        <input name="category" type="text" value="category">
+      </label>
+      <label>
+        fealsd6
+        <input name="category" type="text" value="category">
+      </label>
+      <div class="popupActions">
+        <button id="closePopup">CLOSE</button>
+        <button id="saveRow">SAVE</button>
+      </div>
+
+    </div>
+  </div> -->
+
+
+  <div class="table_wrapper">
+    <table>
+      <thead>
+        <tr>
+          <td>N</td>
+          <td>cardNumber</td>
+          <td>field1</td>
+          <td>field2</td>
+          <!--plural -->
+          <td>field3</td>
+          <!--secondary -->
+          <td>field4</td>
+          <!--example -->
+          <td>field5 </td>
+          <!-- <td>systemImageName/imageName   </td> -->
+          <td>field6 </td>
+          <td>category</td> <!-- -->
+
+        </tr>
+      </thead>
+      <tbody id="table">
+
+      </tbody>
+    </table>
+  </div>
+  <!-- <div id="text_data_list" class="text_data_list_wrapper"></div> -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
+  <script src="src/json/main_json.js"></script>
+</body>
+
+</html>
