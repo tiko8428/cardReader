@@ -178,8 +178,8 @@ function filesToBase64(images) {
       })
       .then((res) => res.data)
       .then((data) => {
-        console.log(data);
-        handelOpenPopup(data.row, data.lang)
+        handelOpenCreatePopup(data.row, data.lang);
+        // handelOpenPopup(data.row, data.lang)
         // handelUpdateTable();
         success();
       }).catch(err => {
@@ -211,7 +211,7 @@ savePopupButton.addEventListener("click", () => {
   })
   data.imageName = "";
   axios.put("json/updateRow", {
-    body: { row: data, language: editLanguage.value, oldCardNumber: selectedItem},
+    body: { row: data, language: editLanguage.value, oldCardNumber: selectedItem },
     headers: {
       "Content-Type": "application/json",
     }
@@ -313,8 +313,19 @@ const resetCreatePopupData = () => {
   selectCreateLanguage.value = show
 };
 
-function handelOpenCreatePopup() {
-  resetCreatePopupData()
+function handelOpenCreatePopup(res, lang) {
+  console.log(res , lang)
+  if (res && lang) {
+    const inputs = createPopup.querySelectorAll("input");
+    const inputArray = Array.from(inputs);
+    const selectLanguage = popup.querySelectorAll("select")[0];
+    selectLanguage.value = lang;
+    inputArray.forEach(item => {
+      item.value = res[item.name];
+    })
+  } else {
+    resetCreatePopupData()
+  }
   createPopup.style.display = "flex";
 };
 

@@ -269,7 +269,7 @@ const getAllfromDBs =  (queryObject = { sort: "cardNumber", leng: "all" }) => {
   const query = queryObject.sort;
   const leng = queryObject.leng || "all";
   // queryObject && queryObject.sort === "cardNumber" ? "cardNumber" : "id";  
-  const ukData =  uk_db.objects("Card").sorted(query);
+  const ukData =  uk_db.objects("Card").sorted(query)
   const deData =  de_db.objects("Card").sorted(query);
   let allDB = [];
   if (leng === "all") {
