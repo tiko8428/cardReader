@@ -211,7 +211,7 @@ savePopupButton.addEventListener("click", () => {
   })
   data.imageName = "";
   axios.put("json/updateRow", {
-    body: { row: data, language: editLanguage.value },
+    body: { row: data, language: editLanguage.value, oldCardNumber: selectedItem},
     headers: {
       "Content-Type": "application/json",
     }

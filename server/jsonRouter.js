@@ -89,7 +89,7 @@ jsonRoutes.delete("/delete-row", (req, res) => {
 })
 
 jsonRoutes.put("/updateRow", (req, res) => {
-  const { row, language } = req.body.body;
+  const { row, language, oldCardNumber } = req.body.body;
   const cardNumber = row.cardNumber;
   if (!row || !language) {
     res.status(400);
@@ -97,6 +97,7 @@ jsonRoutes.put("/updateRow", (req, res) => {
     return;
   }
   const currentLanguage = helper.readJsonFile(language);
+  delete currentLanguage[oldCardNumber];
   const newJson = { ...currentLanguage, [cardNumber]: row }
   helper.saveJson(language, newJson);
   res.send({ success: "success" })
