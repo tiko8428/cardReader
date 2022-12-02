@@ -233,7 +233,8 @@ app.post("/get-data-array", async (req, res) => {
   try {
     const all = await client.textDetection(filePath);
     const foolText = all[0].fullTextAnnotation.text.split("\n");
-    const lang =
+    console.log(foolText);
+	  const lang =
       all[0].fullTextAnnotation.pages[0].property.detectedLanguages[0]
         .languageCode;
     const formatedData = {
@@ -256,7 +257,8 @@ app.post("/get-data-array", async (req, res) => {
     })
     res.send({ row:formatedData, lang: lang!=="de"? "ua": lang });
   } catch (error) {
-    res.status(400)
+    console.log(error)
+	  res.status(400)
     res.send({
       status: "error",
       error: "main Error > GOOGLE API",
